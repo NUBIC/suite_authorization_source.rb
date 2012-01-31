@@ -151,19 +151,31 @@ As noted above, the interface your script must provide is very similar
 to the `SuiteAuthorizationSource` java interface natively supported by
 PSC. It has four methods:
 
-### get_user_by_username(username)
+### get_user_by_username(username, role_detail_level)
 
 Corresponding java method: `getUser(String, SuiteUserRoleLevel)`.
 
 Must return the user hash for the single user with exactly the given
 username, or nil if there is no such user.
 
-### get_user_by_id(id)
+`role_detail_level` indicates how much detail about the user's roles
+will be read from the returned user. It may be `:none`, `:roles`, or
+`:roles_and_scopes`. Your implementation may choose to only include
+the level of detail indicated if that's desirable. (E.g., if
+determining role scope is particularly expensive, you could exclude it
+unless the level is `:roles_and_scopes`.) Unless you have a specific
+need to optimize, it is a good idea to ignore this parameter and
+return all role detail at all times (since this will make your code
+simpler).
+
+### get_user_by_id(id, role_detail_level)
 
 Corresponding java method: `getUser(long, SuiteUserRoleLevel)`.
 
 Must return the user hash for the single user with the given numeric
 ID, or nil if there is no such user.
+
+See `get_user_by_username` for a description of `role_detail_level`.
 
 ### get_users_by_role(role_name)
 
@@ -176,8 +188,8 @@ role hash (see above).
 
 If there are no such users, it may return nil or an empty array.
 
-The returned user hashes may omit role data if it will improve
-performance.
+The returned user hashes may omit role data if desired. (For example,
+if not computing it will improve performance.)
 
 ### search_users(criteria)
 
@@ -196,8 +208,8 @@ following keys:
 If `criteria` is an empty hash, this method must return all the
 available users.
 
-The returned user hashes may omit role data if it will improve
-performance.
+The returned user hashes may omit role data if desired. (For example,
+if not computing it will improve performance.)
 
 # Configure the plugin
 
