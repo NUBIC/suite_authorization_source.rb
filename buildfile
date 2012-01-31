@@ -1,8 +1,7 @@
 require 'buildr/bnd'
-require 'buildr-gemjar'
 
-desc "A CTMS Suite authorization source based on Aker."
-define "aker.ctmssuite" do
+desc "A bridge for building CTMS Suite authorization sources in JRuby."
+define "ctms-auth-ruby" do
   project.version = '0.0.0'
   project.group = 'edu.northwestern.bioinformatics'
 
@@ -17,23 +16,14 @@ define "aker.ctmssuite" do
     test.using(:junit).with Deps.testing
 
     package(:bundle).tap do |b|
-      b['Bundle-Activator'] = 'edu.northwestern.bioinformatics.aker.ctmssuite.Activator'
-      b['Export-Package'] = 'edu.northwestern.bioinformatics.aker.ctmssuite'
-      b['Private-Package'] = 'edu.northwestern.bioinformatics.aker.ctmssuite.internal'
+      b['Bundle-Activator'] = 'edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.Activator'
+      b['Export-Package'] = 'edu.northwestern.bioinformatics.ctmssuite.authorization.ruby'
+      b['Private-Package'] = 'edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.internal'
     end
-  end
-
-  desc 'Aker and its dependencies'
-  define 'aker-gems' do
-    project.version = '3.0.3'
-
-    package(:gemjar).with_gem('aker', project.version).with :manifest => {
-      'Bundle-SymbolicName' => [project.group, project.name.gsub(':', '.')].join('.')
-    }
   end
 
   define 'integration' do
     test.using(:junit, :integration).with Deps.felix, Deps.testing, Deps.paxexam,
-      project('source').test_dependencies, project('aker-gems')
+      project('source').test_dependencies
   end
 end

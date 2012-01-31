@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.aker.ctmssuite.integrationtests;
+package edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.integrationtests;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,99 +1,104 @@
-# Aker for the caBIG CTMS Suite
+# caBIG CTMS Suite authorization in ruby
 
 [Patient Study Calendar][psc] 2.10 and later supports an pluggable
 authorization scheme defined by an OSGi bundle exporting a service
 with a particular interface. Other caBIG CTMS Suite applications may
 be modified to support this scheme in the future.
 
-This library provides a plugin for this scheme which derives its
-authorization information from an [Aker][aker] composite authority.
+This library, `suite_authorization_source.rb`, provides a plugin for
+this scheme which allows you to implement this interface using a
+lightly-coupled ruby script.
 
 [aker]: https://github.com/NUBIC/aker
 [psc]: https://wiki.nci.nih.gov/display/PSC/caBIG+Patient+Study+Calendar+%28PSC%29
 
-## Prepare
+# The interface
 
-The plugin requires two closely related configuration elements:
+The ruby interface this plugin expects is similar to the java
+`SuiteAuthorizationSource` it adapts. The design difference is that it
+uses ruby-native simple values for arguments and return values instead
+of the strongly-typed objects used in the java version. While the java
+objects would be available via JRuby, using simple native types should
+make it possible to test adapters using MRI and make it easier for
+developers without specific JRuby experience to write ruby
+authorization sources.
 
-* An Aker configuration
-* A way of mapping from the `Aker::User` objects provided by the Aker
-  authority and users as defined by the CTMS Suite.
+## The user hash
 
-The plugin expects to read both these things from a ruby script whose
-filename is indicated by a configuration property. The script will be
-`eval`ed inside the plugin. Its effect should be to update the global
-Aker configuration (`Aker.configuration`) with the authorities you
-want to use, plus any configuration parameters they need (don't
-forget to set a portal if your authorities use one). The plugin will
-also read the user mapping from the Aker configuration; read on for
-more details.
-
-## User mapping
-
-The user mapping must be a ruby object that responds to `call`,
-receiving an array of `Aker::User`s and returning a hash mapping from
-usernames to a hash of mapped suite user attributes.
-
-Here's a very simple example to start things off. You could have a
-very simple converter that gives everyone who logs in the Suite System
-Administrator role and nothing else. (This wouldn't be very useful,
-but there you go.) If it was called like so:
-
-    all_sysadmins.call([Aker::User.new('alice'), Aker::User.new('bob')])
-
-It would need to return a hash like this:
+Most of the native types used in the ruby interface are described below
+alongside the methods. One structure is shared among all four methods:
+the hash representing a single user. An example user hash:
 
     {
-      'alice' => {
-         :id => 1,
-         :roles => {
-            :system_administrator => true
-         }
+      :username => 'superuser',
+      :id => 1,
+      :first_name => 'Sue',
+      :last_name => 'User',
+      :email_address => 'sue@nihil.it',
+      :roles => {
+        :system_administrator => true,
+        :user_administrator => { :sites => true }
       },
-      bob' => {
-         :id => 2,
-         :roles => {
-            :system_administrator => true
-         }
-      }
+      :account_end_date => Date.new(2020, 3, 9)
     }
 
-There are several attributes the user mapping may return for each
-user.
+This hash describes a user with username `"superuser"` and two
+roles. Here's what the attributes mean.
 
 <table>
   <tr><th>Attribute</th><th>Mandatory</th><th>Description</th></tr>
+
   <tr>
-    <td>`:id`</td><td>Yes</td>
+    <td><code>:username</code></td><td>Yes</td>
+    <td>
+      The desired username for the user in the suite apps.
+    </td>
+  </tr>
+
+  <tr>
+    <td><code>:id</code></td><td>Yes</td>
     <td>
       A stable numeric ID for this user. This ID will be used to
-      associate domain information with the user in the CTMS applications,
-      so it should never change.
+      associate domain information with the user in the CTMS
+      applications, so it should never change.
     </td>
   </tr>
+
   <tr>
-    <td>`:username`</td><td>No</td>
+    <td><code>:first_name</code> and <code>:last_name</code></td><td>Yes</td>
     <td>
-      The desired username for the user in the suite apps. If not
-      specified, defaults to the username from the source
-      `Aker::User`.
+      The first and last name for the user.
     </td>
   </tr>
+
   <tr>
-    <td>`:first_name` and `:last_name`</td><td>No</td>
+    <td><code>:email_address</code></td><td>Yes</td>
     <td>
-      The first and/or last name for the user. These will be defaulted
-      from the source `Aker::User` if not specified.
+      A working e-mail address for the user.
     </td>
   </tr>
+
   <tr>
-    <td>`:roles`</td><td>Yes</td>
+    <td><code>:account_end_date</code></td><td>No</td>
+    <td>
+      The date after which the user should no longer have access to
+      the system. If the current date is later than this date, any
+      authorization attempts for the user will fail. However, the user
+      will still show up in user lists in the CTMS Suite apps (which
+      may be desirable).
+    </td>
+  </tr>
+
+  <tr>
+    <td><code>:roles</code></td><td>Yes</td>
     <td>
       The suite roles this user should have. See the next section for
       more detail.
     </td>
   </tr>
 </table>
+
+All mandatory attributes must be present, non-nil, and not blank.
 
 ### Roles
 
@@ -112,7 +117,7 @@ descriptions of their capabilities in each suite application.
 
 [ccts-roles]: https://wiki.nci.nih.gov/display/Suite/Unified+Security+-+Roles+2.3
 
-#### In the user mapping
+#### In the user hash
 
 The `:roles` key in the user mapping result must point to a hash whose
 keys are the names of the roles of which the user is a member. The
@@ -128,7 +133,7 @@ values:
 * A hash providing scoping information. This should be of the form `{
   :sites => %w(IL034 MN070), :studies => true }`. More technically, the
   two scopes are specified with the symbol keys `:sites` and
-  `:studies` and the values may be either:
+  `:studies`. The values may be either:
     * An array of strings indicating the assigned identifiers for the
       related domain objects under which the user's role membership is
       scoped, or
@@ -140,20 +145,79 @@ site & study, site, and unscoped. If you do not provide scope
 information for each type of scope that applies to the role, the role
 won't take effect. (The plugin will detect and log this situation.)
 
-## Use
+## The interface (for real this time)
 
-Once you have your Aker configuration and your user mapping, you're
-ready to deploy the plugin.
+As noted above, the interface your script must provide is very similar
+to the `SuiteAuthorizationSource` java interface natively supported by
+PSC. It has four methods:
 
-### More gems
+### get_user_by_username(username)
 
-TODO
+Corresponding java method: `getUser(String, SuiteUserRoleLevel)`.
 
-### Deploying in PSC
+Must return the user hash for the single user with exactly the given
+username, or nil if there is no such user.
 
-#### Configuration
+### get_user_by_id(id)
 
-#### Bundles
+Corresponding java method: `getUser(long, SuiteUserRoleLevel)`.
+
+Must return the user hash for the single user with the given numeric
+ID, or nil if there is no such user.
+
+### get_users_by_role(role_name)
+
+Corresponding java method: `getUsersByRole(SuiteRole)`.
+
+Must return an array of user hashes describing the users with the
+given named role, regardless of scope. `role_name` will be a symbol
+following the same construction rules as the keys in the user hash's
+role hash (see above).
+
+If there are no such users, it may return nil or an empty array.
+
+The returned user hashes may omit role data if it will improve
+performance.
+
+### search_users(criteria)
+
+Corresponding java method: `searchUsers(SuiteUserSearchOptions)`.
+
+Must return an array of user hashes describing the users matching the
+given criteria. `criteria` will be a hash with zero or more of the
+following keys:
+
+* `:username_substring`: a case-insensitive substring of the username.
+* `:first_name_substring`: a case-insensitive substring of the first
+  name.
+* `:last_name_substring`: definition left as an exercise for the
+  reader.
+
+If `criteria` is an empty hash, this method must return all the
+available users.
+
+The returned user hashes may omit role data if it will improve
+performance.
+
+# Configure the plugin
+
+This plugin requires that you specify (via a configuration property)
+the filename of a ruby script which implements the interface described
+above. The result of `eval`ing this script must be an object that
+responds to the four specified methods in the way described. All
+methods on the object returned must be re-entrant.
+
+The script may, of course, refer to other files using the usual ruby
+methods `require` and `load`. It may also refer to rubygems which have
+been deployed in fragment bundles attached to the plugin bundle.
+
+(TODO: flesh this out.)
+
+## Deploying in PSC
+
+### Configuration
+
+### Bundles
 
 # Project information
 

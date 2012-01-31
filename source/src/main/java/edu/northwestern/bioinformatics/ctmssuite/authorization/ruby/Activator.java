@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.aker.ctmssuite;
+package edu.northwestern.bioinformatics.ctmssuite.authorization.ruby;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.aker.ctmssuite.internal;
+package edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.internal;
 
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteAuthorizationSource;
@@ -11,7 +11,7 @@ import java.util.Collection;
 /**
  * @author Rhett Sutphin
  */
-public class AkerSuiteAuthorizationSource implements SuiteAuthorizationSource {
+public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
     @Override
     public SuiteUser getUser(String username, SuiteUserRoleLevel suiteUserRoleLevel) {
         throw new UnsupportedOperationException("getUser not implemented");
