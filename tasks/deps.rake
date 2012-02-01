@@ -7,20 +7,33 @@ DepVersions = struct(
 )
 
 Deps = struct(
-  :jruby => "org.jruby:jruby-complete:jar:1.6.5",
+  :jruby => "org.jruby:jruby-complete:jar:1.6.6",
 
   :osgi => struct(
     :core => 'org.osgi:org.osgi.core:jar:4.2.0',
     :compendium => 'org.osgi:org.osgi.compendium:jar:4.2.0'
   ),
 
+  :slf4j => struct(
+    :api => "org.slf4j:slf4j-api:jar:#{DepVersions.slf4j}",
+    :jcl => "org.slf4j:jcl-over-slf4j:jar:#{DepVersions.slf4j}"
+  ),
+
   :ctms_commons => struct(
-    %w(suite-authorization).inject({}) { |h, a|
+    %w(base core suite-authorization).inject({}) { |h, a|
       h[a] = "gov.nih.nci.cabig.ctms:ctms-commons-#{a}:jar:1.1.1.RELEASE"; h
     }
   ),
 
-  :testing => [],
+  :spring => struct(
+    %w(beans core).inject({}) { |h, a|
+      h[a] = "org.springframework:spring-#{a}:jar:3.0.7.RELEASE" ; h
+    }
+  ),
+
+  :testing => [
+    "org.slf4j:slf4j-simple:jar:#{DepVersions.slf4j}"
+  ],
 
   :paxexam => [
     %w(junit4 container-native testforge link-assembly).collect { |a|

@@ -12,7 +12,8 @@ define "ctms-auth-ruby" do
       artifact(fake_artifact_name, a)
     }
 
-    compile.with libs, Deps.jruby, Deps.ctms_commons, Deps.osgi
+    compile.with libs, Deps.jruby, Deps.ctms_commons, Deps.osgi, Deps.spring,
+      Deps.slf4j.api, Deps.slf4j.jcl
     test.using(:junit).with Deps.testing
 
     package(:bundle).tap do |b|
