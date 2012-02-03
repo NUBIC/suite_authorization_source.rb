@@ -34,6 +34,13 @@ public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
     private Object rubySuiteAuthorizationSource;
     private Map<String, RubySymbol> symbolMap = new HashMap<String, RubySymbol>();
 
+    /**
+     * Creates a new bridge source. The provided scripting container must contain a global variable
+     * named <code>$suite_authorization_source</code> pointing to an object which provides the
+     * interface defined in the README.
+     *
+     * @param scriptingContainer
+     */
     public RubySuiteAuthorizationSource(ScriptingContainer scriptingContainer) {
         this.scriptingContainer = scriptingContainer;
         this.rubySuiteAuthorizationSource = scriptingContainer.get("$suite_authorization_source");
@@ -142,8 +149,8 @@ public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
-    private RubySymbol enumSymbol(Enum level) {
-        return sym(level.name().toLowerCase());
+    private RubySymbol enumSymbol(Enum value) {
+        return sym(value.name().toLowerCase());
     }
 
     @Override

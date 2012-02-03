@@ -16,12 +16,13 @@ Deps = struct(
 
   :slf4j => struct(
     :api => "org.slf4j:slf4j-api:jar:#{DepVersions.slf4j}",
-    :jcl => "org.slf4j:jcl-over-slf4j:jar:#{DepVersions.slf4j}"
+    :jcl => "org.slf4j:jcl-over-slf4j:jar:#{DepVersions.slf4j}",
+    :simple => "org.slf4j:slf4j-simple:jar:#{DepVersions.slf4j}"
   ),
 
   :ctms_commons => struct(
-    %w(base core suite-authorization).inject({}) { |h, a|
-      h[a] = "gov.nih.nci.cabig.ctms:ctms-commons-#{a}:jar:1.1.1.RELEASE"; h
+    %w(base lang core suite-authorization).inject({}) { |h, a|
+      h[a] = "gov.nih.nci.cabig.ctms:ctms-commons-#{a}:jar:1.1.2.RELEASE"; h
     }
   ),
 
@@ -31,9 +32,14 @@ Deps = struct(
     }
   ),
 
-  :testing => [
-    "org.slf4j:slf4j-simple:jar:#{DepVersions.slf4j}"
-  ],
+  :jakarta_commons => struct(
+    [
+      %w(lang 2.4.0),
+      %w(collections 3.2.0)
+    ].inject({}) { |h, (a, v)|
+      h[a] = "org.apache.commons:com.springsource.org.apache.commons.#{a}:jar:#{v}"; h
+    }
+  ),
 
   :paxexam => [
     %w(junit4 container-native testforge link-assembly).collect { |a|
@@ -43,6 +49,11 @@ Deps = struct(
   ].flatten,
 
   :felix => struct(
-    :framework => "org.apache.felix:org.apache.felix.framework:jar:3.0.9"
+    [
+      %w(framework 3.0.9),
+      %w(configadmin 1.2.8)
+    ].inject({}) { |h, (a, v)|
+      h[a] = "org.apache.felix:org.apache.felix.#{a}:jar:#{v}"; h
+    }
   )
 )

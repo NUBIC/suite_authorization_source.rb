@@ -14,7 +14,7 @@ define "ctms-auth-ruby" do
 
     compile.with libs, Deps.jruby, Deps.ctms_commons, Deps.osgi, Deps.spring,
       Deps.slf4j.api, Deps.slf4j.jcl
-    test.using(:junit).with Deps.testing
+    test.using(:junit)
 
     package(:bundle).tap do |b|
       b['Bundle-Activator'] = 'edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.Activator'
@@ -23,8 +23,43 @@ define "ctms-auth-ruby" do
     end
   end
 
-  define 'integration' do
-    test.using(:junit, :integration).with Deps.felix, Deps.testing, Deps.paxexam,
-      project('source').test_dependencies
+  define 'integrated-tests' do
+    start_bundle_deps = [
+      Deps.felix.configadmin,
+      Deps.jakarta_commons.lang,
+      Deps.jakarta_commons.collections,
+      Deps.slf4j.api,
+      project('source').and_dependencies
+    ].flatten.collect { |a|
+      case
+      when Buildr::Project === a
+        a.packages.first
+      when a.to_s =~ /org.osgi/
+        nil
+      else
+        artifact(a)
+      end
+    }.compact
+
+    no_start_bundle_deps = [
+      Deps.slf4j.simple
+    ].flatten.collect { |a|
+      artifact(a)
+    }
+
+    test.
+      using(:junit, :integration).
+      with(
+        Deps.felix, Deps.paxexam,
+        project('source').test_dependencies,
+        start_bundle_deps
+      ).
+      using(
+        :properties => {
+          "startBundleArtifacts" => start_bundle_deps.collect(&:name).join(','),
+          "noStartBundleArtifacts" => no_start_bundle_deps.collect(&:name).join(',')
+        },
+        :java_args => ENV['DEBUG'] ? %w(-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5013) : []
+      )
   end
 end
