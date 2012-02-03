@@ -104,7 +104,6 @@ public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
         }
     }
 
-    // TODO: SuiteRoleMembership should expose generic forAll and forObjects methods
     @SuppressWarnings({ "ChainOfInstanceofChecks", "unchecked" })
     private void applyRoleScopeHash(SuiteRoleMembership membership, Map<?, ?> value) {
         SuiteRole role = membership.getRole();
@@ -115,23 +114,11 @@ public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
                 if (scopeValue == null) {
                     log.warn("Missing necessary scope value :{} for :{}", type.getPluralName(), role.getCsmName());
                 } else if (scopeValue instanceof Boolean) {
-                    if (ScopeType.STUDY == type) {
-                        membership.forAllStudies();
-                    } else if (ScopeType.SITE == type) {
-                        membership.forAllSites();
-                    } else {
-                        log.warn("Unexpected scope type encountered: {}", type);
-                    }
+                    membership.forAll(type);
                 } else if (scopeValue instanceof List) {
                     List<String> scopeList = (List<String>) scopeValue;
                     String[] scopeIdents = scopeList.toArray(new String[scopeList.size()]);
-                    if (ScopeType.STUDY == type) {
-                        membership.forStudies(scopeIdents);
-                    } else if (ScopeType.SITE == type) {
-                        membership.forSites(scopeIdents);
-                    } else {
-                        log.warn("Unexpected scope type encountered: {}", type);
-                    }
+                    membership.forIdentifiers(type, scopeIdents);
                 } else {
                     log.warn("Unexpected value ({}) for scope :{} and role :{}",
                         new Object[] { scopeValue, type.getPluralName(), role.getCsmName() });
