@@ -1,9 +1,11 @@
 package edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.integrated;
 
 import edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.internal.RubySuiteAuthorizationSourceFactory;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteAuthorizationSource;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteUser;
 import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteUserRoleLevel;
+import gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteUserSearchOptions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,9 +18,11 @@ import org.osgi.service.cm.ConfigurationAdmin;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import static edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.integrated.SuiteUserCollectionMatcher.suiteUsers;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.ops4j.pax.exam.CoreOptions.*;
@@ -95,10 +99,22 @@ public class SourceUsableTest {
         assertEquals("Anderson", alice.getLastName());
     }
 
-//    @Test @Ignore
+    @Test
     public void itCanGetAUserById() throws Exception {
         SuiteUser alice = actualSource().getUser(4, SuiteUserRoleLevel.ROLES_AND_SCOPES);
         assertEquals("alice", alice.getUsername());
+    }
+
+    @Test
+    public void itCanGetUsersByRole() throws Exception {
+        Collection<SuiteUser> actual = actualSource().getUsersByRole(SuiteRole.STUDY_CREATOR);
+        assertThat(actual, is(suiteUsers("alice", "cat")));
+    }
+
+    @Test
+    public void itCanSearchUsers() throws Exception {
+        Collection<SuiteUser> actual = actualSource().searchUsers(SuiteUserSearchOptions.forAllNames("cath"));
+        assertThat(actual, is(suiteUsers("cat")));
     }
 
     private SuiteAuthorizationSource actualSource() {

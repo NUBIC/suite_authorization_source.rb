@@ -15,6 +15,7 @@ import org.jruby.runtime.builtin.IRubyObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -50,11 +51,14 @@ public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
         }
     }
 
-    @Override
-    public SuiteUser getUser(String username, SuiteUserRoleLevel suiteUserRoleLevel) {
-        Object result = scriptingContainer.callMethod(rubySuiteAuthorizationSource,
-            "get_user_by_username", username, enumSymbol(suiteUserRoleLevel));
-        return userFromUserHash(result);
+    @SuppressWarnings({ "unchecked" })
+    private Collection<SuiteUser> usersFromUserHashes(Object resultArray) {
+        Collection<Object> hashes = (Collection<Object>) resultArray;
+        Collection<SuiteUser> transformed = new ArrayList<SuiteUser>(hashes.size());
+        for (Object o : hashes) {
+            transformed.add(userFromUserHash(o));
+        }
+        return transformed;
     }
 
     private SuiteUser userFromUserHash(Object userHash) throws InvalidSuiteUserException {
@@ -73,13 +77,17 @@ public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
     }
 
     private Date createDate(Object date) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(
-            ((Number) scriptingContainer.callMethod(date, "year")).intValue(),
-            ((Number) scriptingContainer.callMethod(date, "month")).intValue() - 1,
-            ((Number) scriptingContainer.callMethod(date, "day")).intValue()
-        );
-        return cal.getTime();
+        if (date == null) {
+            return null;
+        } else {
+            Calendar cal = Calendar.getInstance();
+            cal.set(
+                ((Number) scriptingContainer.callMethod(date, "year")).intValue(),
+                ((Number) scriptingContainer.callMethod(date, "month")).intValue() - 1,
+                ((Number) scriptingContainer.callMethod(date, "day")).intValue()
+            );
+            return cal.getTime();
+        }
     }
 
     private void applyRoles(SuiteUser.Builder userBuilder, Object rolesHash) {
@@ -141,17 +149,41 @@ public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
     }
 
     @Override
+    public SuiteUser getUser(String username, SuiteUserRoleLevel suiteUserRoleLevel) {
+        Object result = scriptingContainer.callMethod(rubySuiteAuthorizationSource,
+            "get_user_by_username", username, enumSymbol(suiteUserRoleLevel));
+        return userFromUserHash(result);
+    }
+
+    @Override
     public SuiteUser getUser(long id, SuiteUserRoleLevel suiteUserRoleLevel) {
-        throw new UnsupportedOperationException("getUser not implemented");
+        Object result = scriptingContainer.callMethod(rubySuiteAuthorizationSource,
+            "get_user_by_id", id, enumSymbol(suiteUserRoleLevel));
+        return userFromUserHash(result);
     }
 
     @Override
     public Collection<SuiteUser> getUsersByRole(SuiteRole suiteRole) {
-        throw new UnsupportedOperationException("getUsersByRole not implemented");
+        Object result = scriptingContainer.callMethod(
+            rubySuiteAuthorizationSource, "get_users_by_role", enumSymbol(suiteRole));
+        return usersFromUserHashes(result);
     }
 
     @Override
-    public Collection<SuiteUser> searchUsers(SuiteUserSearchOptions suiteUserSearchOptions) {
-        throw new UnsupportedOperationException("searchUsers not implemented");
+    public Collection<SuiteUser> searchUsers(SuiteUserSearchOptions opts) {
+        Map<RubySymbol, String> criteriaHash = new HashMap<RubySymbol, String>();
+        if (opts.getFirstNameSubstring() != null) {
+            criteriaHash.put(sym("first_name_substring"), opts.getFirstNameSubstring());
+        }
+        if (opts.getLastNameSubstring() != null) {
+            criteriaHash.put(sym("last_name_substring"), opts.getLastNameSubstring());
+        }
+        if (opts.getUsernameSubstring() != null) {
+            criteriaHash.put(sym("username_substring"), opts.getUsernameSubstring());
+        }
+
+        Object result = scriptingContainer.callMethod(rubySuiteAuthorizationSource,
+            "search_users", criteriaHash);
+        return usersFromUserHashes(result);
     }
 }

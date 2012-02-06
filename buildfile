@@ -14,7 +14,7 @@ define "ctms-auth-ruby" do
 
     compile.with libs, Deps.jruby, Deps.ctms_commons, Deps.osgi, Deps.spring,
       Deps.slf4j.api, Deps.slf4j.jcl
-    test.using(:junit)
+    test.using(:junit).with Deps.slf4j.simple
 
     package(:bundle).tap do |b|
       b['Bundle-Activator'] = 'edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.Activator'
