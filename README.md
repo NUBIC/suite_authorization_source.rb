@@ -205,6 +205,9 @@ following keys:
 * `:last_name_substring`: definition left as an exercise for the
   reader.
 
+If `criteria` includes multiple keys, the conditions should be ORed
+together.
+
 If `criteria` is an empty hash, this method must return all the
 available users.
 
