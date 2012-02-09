@@ -68,7 +68,6 @@ class TestSource
   end
 
   def search_users(criteria)
-    puts "search_users(#{criteria.inspect})"
     appliable_criteria = [:username, :first_name, :last_name].
       collect { |k| [k, criteria[:"#{k}_substring"]] }.
       select { |attr, criterion| criterion }.

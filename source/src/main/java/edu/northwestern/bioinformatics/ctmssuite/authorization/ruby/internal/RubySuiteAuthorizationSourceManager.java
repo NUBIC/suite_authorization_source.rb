@@ -6,6 +6,7 @@ import org.jruby.embed.LocalContextScope;
 import org.jruby.embed.LocalVariableBehavior;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
+import org.jruby.embed.osgi.OSGiScriptingContainer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 
@@ -32,7 +33,7 @@ public class RubySuiteAuthorizationSourceManager {
     }
 
     private RubySuiteAuthorizationSource buildNewSource(String sourceScript) {
-        ScriptingContainer container = new ScriptingContainer(
+        ScriptingContainer container = new OSGiScriptingContainer(bundle,
             LocalContextScope.SINGLETHREAD, LocalVariableBehavior.TRANSIENT);
         EmbedEvalUnit evalUnit = container.parse(PathType.ABSOLUTE, sourceScript);
         evalUnit.run();

@@ -1,0 +1,19 @@
+users:
+  xia:
+    first_name: Xia
+    last_name: Xhepa
+    email: xia@example.org
+    identifiers:
+      ctms_id: 625
+  yolanda:
+    first_name: Yolanda
+    last_name: Yei
+    email: yei@example.org
+    identifiers:
+      ctms_id: 676
+  zelda:
+    first_name: Zelda
+    last_name: Zimmerman
+    email: zelda@example.org
+    identifiers:
+      ctms_id: 729
