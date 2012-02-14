@@ -218,21 +218,57 @@ if not computing it will improve performance.)
 
 This plugin requires that you specify (via a configuration property)
 the filename of a ruby script which implements the interface described
-above. The result of `eval`ing this script must be an object that
+above. The result of `eval`ing this script must be that the global
+variable `$suite_authorization_source` refers to an object that
 responds to the four specified methods in the way described. All
 methods on the object returned must be re-entrant.
 
-The script may, of course, refer to other files using the usual ruby
-methods `require` and `load`. It may also refer to rubygems which have
-been deployed in fragment bundles attached to the plugin bundle.
+The script may refer to other files using the usual ruby methods
+`require` and `load`. It may refer to rubygems which have been
+[packaged into JARs][gemjar] and which JARs are `require`d in the
+script using their absolute paths. `buildr` with [buildr-gemjar][] is
+an easy way to package a set of gems with its dependencies into a
+single JAR.
 
-(TODO: flesh this out.)
+[gemjar]: http://blog.nicksieger.com/articles/2009/01/10/jruby-1-1-6-gems-in-a-jar
+[buildr-gemjar]: https://github.com/NUBIC/buildr-gemjar
 
 ## Deploying in PSC
 
-### Configuration
+All versions of PSC that support pluggable authorization also support
+dynamically loading OSGi bundles and configuration from [a special
+directory structure][psc-deploy-plugins].
+
+[psc-deploy-plugins]: https://code.bioinformatics.northwestern.edu/issues/wiki/psc/Deploying_plugins
+
+The way this library is structured, you will want to deploy the
+bundles (i.e., the JARs) before creating the configuration files.
 
 ### Bundles
+
+You'll need to deploy the JARs produced and used by this project,
+dividing them up like so:
+
+* libraries
+  * jruby-complete
+  * ctms-auth-ruby-jruby-dynamic-import-{version}.jar
+* plugins
+  * ctms-auth-ruby-source-{version}.jar
+
+Note that any gemjars that your authorization source depends on should
+not be deployed in either of these directories. See the next section.
+
+### Configuration
+
+In PSC's bundle configurations directory, you'll need to put at least
+a file named `ctmssuite.authorization.ruby-{any_name}.cfg`. This file
+should contain a single line of the following form:
+
+    sourceScript=/full/path/to/your/script.rb
+
+You may also put your authorization source script and any of its
+gemjar or other dependencies in the configurations directory. PSC
+ignores any file in that directory that does not end with `.cfg`.
 
 # Project information
 
