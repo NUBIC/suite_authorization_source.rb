@@ -21,6 +21,7 @@ define "ctms-auth-ruby" do
       b['Bundle-Activator'] = 'edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.Activator'
       b['Export-Package'] = 'edu.northwestern.bioinformatics.ctmssuite.authorization.ruby'
       b['Private-Package'] = 'edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.internal'
+      b['Bundle-Name'] = 'suite_authorization_source.rb Main'
     end
   end
 
@@ -83,6 +84,7 @@ define "ctms-auth-ruby" do
   define 'jruby-dynamic-import' do
     package(:jar).with(:manifest => {
         'Bundle-ManifestVersion' => 2,
+        'Bundle-Name' => 'Fragment that adds dynamic importing to JRuby',
         'Bundle-SymbolicName' => [project.group, project.name.gsub(':', '.')].join('.'),
         'Bundle-Version' => project.version,
         'Fragment-Host' => 'org.jruby.jruby',
