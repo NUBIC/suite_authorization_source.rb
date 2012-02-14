@@ -237,3 +237,9 @@ been deployed in fragment bundles attached to the plugin bundle.
 # Project information
 
 # Copyright
+
+`suite_authorization_source.rb` is copyright 2012 Rhett Sutphin and
+was built at and for [NUBIC][]. It is made available under the MIT
+license; see LICENSE alongside this file for details.
+
+[NUBIC]: http://www.nucats.northwestern.edu/centers/nubic
