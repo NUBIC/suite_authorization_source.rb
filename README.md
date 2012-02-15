@@ -173,7 +173,8 @@ simpler).
 Corresponding java method: `getUser(long, SuiteUserRoleLevel)`.
 
 Must return the user hash for the single user with the given numeric
-ID, or nil if there is no such user.
+ID, or nil if there is no such user. The numeric ID must be in the
+range of a 32-bit signed integer.
 
 See `get_user_by_username` for a description of `role_detail_level`.
 
