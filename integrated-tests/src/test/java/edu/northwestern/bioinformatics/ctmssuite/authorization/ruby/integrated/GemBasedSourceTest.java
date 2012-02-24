@@ -28,7 +28,7 @@ public class GemBasedSourceTest extends CtmsAuthRubyIntegratedTestCase {
 
     @Test
     public void itCanFindAUserByUsername() throws Exception {
-        assertThat(actualSource().getUser("zelda", SuiteUserRoleLevel.NONE).getId(), is(729L));
+        assertThat(actualSource().getUser("zelda", SuiteUserRoleLevel.NONE).getId(), is(729));
     }
 
     @Test

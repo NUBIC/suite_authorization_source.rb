@@ -67,7 +67,7 @@ public class RubySuiteAuthorizationSourceTest {
 
     @Test
     public void itMapsIdToId() throws Exception {
-        assertThat(alice().getId(), is(4L));
+        assertThat(alice().getId(), is(4));
     }
 
     @Test

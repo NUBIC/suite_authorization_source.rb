@@ -69,7 +69,7 @@ public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
             SuiteUser.Builder userBuilder = new SuiteUser.Builder(false).
                 username((String) userMap.get(sym("username"))).
                 name((String) userMap.get(sym("first_name")), (String) userMap.get(sym("last_name"))).
-                id((Long) userMap.get(sym("id"))).
+                id(((Number) userMap.get(sym("id"))).intValue()).
                 accountEndsOn(createDate(userMap.get(sym("account_end_date"))));
             applyRoles(userBuilder, userMap.get(sym("roles")));
             return userBuilder.toUser();
@@ -156,7 +156,7 @@ public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
     }
 
     @Override
-    public SuiteUser getUser(long id, SuiteUserRoleLevel suiteUserRoleLevel) {
+    public SuiteUser getUser(int id, SuiteUserRoleLevel suiteUserRoleLevel) {
         Object result = scriptingContainer.callMethod(rubySuiteAuthorizationSource,
             "get_user_by_id", id, enumSymbol(suiteUserRoleLevel));
         return userFromUserHash(result);
