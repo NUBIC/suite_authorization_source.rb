@@ -19,7 +19,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import static edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.internal.SuiteUserCollectionMatcher.*;
+import static edu.northwestern.bioinformatics.ctmssuite.authorization.ruby.internal.SuiteUserCollectionMatcher.suiteUsers;
 import static gov.nih.nci.cabig.ctms.suite.authorization.plugin.SuiteUserSearchOptions.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -195,6 +195,11 @@ public class RubySuiteAuthorizationSourceTest {
     }
 
     @Test
+    public void itReturnsAnEmptyListForNilMatchingUsers() throws Exception {
+        assertThat(source.getUsersByRole(SuiteRole.LAB_IMPACT_CALENDAR_NOTIFIER).size(), is(0));
+    }
+
+    @Test
     public void itSearchesUsersByUsername() throws Exception {
         Collection<SuiteUser> actual = source.searchUsers(forUsernameSubstring("t"));
         assertThat(actual, is(suiteUsers("betty", "cat")));
@@ -225,5 +230,11 @@ public class RubySuiteAuthorizationSourceTest {
     public void itCanSearchForEveryone() throws Exception {
         Collection<SuiteUser> actual = source.searchUsers(allUsers());
         assertThat(actual, is(suiteUsers("alice", "betty", "cat")));
+    }
+
+    @Test
+    public void itReturnsNothingWhenSourceSearchReturnsNil() throws Exception {
+        Collection<SuiteUser> actual = source.searchUsers(forUsernameSubstring("__NIL__"));
+        assertThat(actual.size(), is(0));
     }
 }

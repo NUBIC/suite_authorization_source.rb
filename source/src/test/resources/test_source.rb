@@ -64,10 +64,18 @@ class TestSource
   end
 
   def get_users_by_role(role_name)
-    USERS.select { |u| u[:roles].has_key?(role_name.to_sym) }
+    # special case for testing
+    if role_name == :lab_impact_calendar_notifier
+      nil
+    else
+      USERS.select { |u| u[:roles].has_key?(role_name.to_sym) }
+    end
   end
 
   def search_users(criteria)
+    # special case for testing
+    return nil if criteria[:username_substring] == '__NIL__'
+
     appliable_criteria = [:username, :first_name, :last_name].
       collect { |k| [k, criteria[:"#{k}_substring"]] }.
       select { |attr, criterion| criterion }.

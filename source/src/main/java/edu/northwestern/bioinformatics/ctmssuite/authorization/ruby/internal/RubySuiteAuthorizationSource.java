@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +54,8 @@ public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
 
     @SuppressWarnings({ "unchecked" })
     private Collection<SuiteUser> usersFromUserHashes(Object resultArray) {
+        if (resultArray == null) return Collections.emptyList();
+
         Collection<Object> hashes = (Collection<Object>) resultArray;
         Collection<SuiteUser> transformed = new ArrayList<SuiteUser>(hashes.size());
         for (Object o : hashes) {
