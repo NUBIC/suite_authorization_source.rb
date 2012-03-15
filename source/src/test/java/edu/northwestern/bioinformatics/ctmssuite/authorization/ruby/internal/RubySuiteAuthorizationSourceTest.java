@@ -73,6 +73,11 @@ public class RubySuiteAuthorizationSourceTest {
     }
 
     @Test
+    public void itMapsEmailAddressToEmailAddress() throws Exception {
+        assertThat(alice().getEmailAddress(), is("alice@example.org"));
+    }
+
+    @Test
     public void itMapsAccountEndDateToAccountEndDate() throws Exception {
         Date actual = alice().getAccountEndDate();
         Calendar cal = Calendar.getInstance();

@@ -73,6 +73,7 @@ public class RubySuiteAuthorizationSource implements SuiteAuthorizationSource {
                 username((String) userMap.get(sym("username"))).
                 name((String) userMap.get(sym("first_name")), (String) userMap.get(sym("last_name"))).
                 id(((Number) userMap.get(sym("id"))).intValue()).
+                emailAddress((String) userMap.get(sym("email_address"))).
                 accountEndsOn(createDate(userMap.get(sym("account_end_date"))));
             applyRoles(userBuilder, userMap.get(sym("roles")));
             return userBuilder.toUser();
