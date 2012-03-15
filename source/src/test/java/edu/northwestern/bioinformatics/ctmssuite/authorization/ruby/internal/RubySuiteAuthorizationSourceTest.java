@@ -31,6 +31,8 @@ public class RubySuiteAuthorizationSourceTest {
     @Before
     public void before() throws Exception {
         ScriptingContainer scriptingContainer = new ScriptingContainer(LocalContextScope.SINGLETHREAD);
+        // force use of embedded home even when JRUBY_HOME is set
+        scriptingContainer.setHomeDirectory("classpath:/META-INF/jruby.home");
         EmbedEvalUnit parse = scriptingContainer.parse(PathType.CLASSPATH, "test_source.rb");
         if (parse == null) {
             throw new RuntimeException("Could not find the test source script");
