@@ -35,6 +35,7 @@ public class RubySuiteAuthorizationSourceManager {
     private RubySuiteAuthorizationSource buildNewSource(String sourceScript) {
         ScriptingContainer container = new OSGiScriptingContainer(bundle,
             LocalContextScope.SINGLETHREAD, LocalVariableBehavior.TRANSIENT);
+        container.setHomeDirectory("classpath:/META-INF/jruby.home");
         EmbedEvalUnit evalUnit = container.parse(PathType.ABSOLUTE, sourceScript);
         evalUnit.run();
         return new RubySuiteAuthorizationSource(container);

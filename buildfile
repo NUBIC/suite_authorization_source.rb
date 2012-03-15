@@ -68,7 +68,8 @@ define "ctms-auth-ruby" do
       using(
         :properties => {
           "startBundleArtifacts" => start_bundle_deps.collect(&:name).join(','),
-          "noStartBundleArtifacts" => no_start_bundle_deps.collect(&:name).join(',')
+          "noStartBundleArtifacts" => no_start_bundle_deps.collect(&:name).join(','),
+          "jruby.home" => "jruby.home being set should not cause any problems"
         },
         :java_args => ENV['DEBUG'] ? %w(-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5013) : []
       )
