@@ -1,1 +1,1 @@
-rvm ruby-1.8.7-p330@suite-auth-source --create
+rvm ruby-1.9.3-p194@suite-auth-source --create

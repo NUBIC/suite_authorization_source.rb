@@ -63,7 +63,7 @@ task :deploy => :github_credentials do
 end
 
 namespace :deploy do
-  task :delete, :version, :needs => :github_credentials do |t, args|
+  task :delete, [:version] => [:github_credentials] do |t, args|
     require 'github_api'
 
     unless args[:version] =~ /\d+\.\d+\.\d+/
