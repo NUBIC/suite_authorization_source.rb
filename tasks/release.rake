@@ -1,5 +1,5 @@
 desc "Do the full release process"
-task :release => [:clean, :package, :deploy]
+task :full_release => [:clean, :package, :deploy]
 
 GITHUB_REPO_USER = 'NUBIC'
 GITHUB_REPO_NAME = 'suite_authorization_source.rb'

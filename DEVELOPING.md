@@ -22,17 +22,18 @@ standard `release` and `deploy` tasks to achieve this. Release process:
 * Commit this change alone with the message (e.g.) `Version 3.9.4.RELEASE`.
 * Tag the change:
 
-    $ git tag -a 'Version 3.9.4.RELEASE'
+    $ git tag -a '3.9.4.RELEASE' -m 'Version 3.9.4.RELEASE'
     $ git push --tags
 
 * Build and deploy the project:
 
-    $ buildr release TEST=no
+    $ buildr full_release TEST=no
 
 * Update the project version to the next dev version in `buildfile`. E.g.,
   update `3.9.4.RELEASE` to `3.9.5.DEV`.
-* Commit and push this change alone:
+* Add a new subheading for the next release to `CHANGELOG.md`.
+* Commit and push these two change alone:
 
-    $ git add buildfile
+    $ git add buildfile CHANGELOG.md
     $ git commit -m 'Update for ongoing development'
     $ git push
