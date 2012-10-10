@@ -47,7 +47,7 @@ task :deploy => :github_credentials do
   projs.each do |pub_proj|
     pkg = pub_proj.packages.first
     pkg_file = pkg.to_s
-    target_file_name = "#{pub_proj.version}/#{File.basename pkg_file}"
+    target_file_name = File.basename pkg_file
 
     info "Telling GitHub about #{target_file_name}"
     created = github_downloads.create(GITHUB_REPO_USER, GITHUB_REPO_NAME,
