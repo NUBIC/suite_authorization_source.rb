@@ -71,9 +71,6 @@ public abstract class CtmsAuthRubyIntegratedTestCase {
         Dictionary<String, String> props = new Hashtable<String, String>();
         props.put("sourceScript", getSourceScriptPath());
         config.update(props);
-
-        // TODO: is there an event to listen for instead?
-        Thread.sleep(5000);
     }
 
     protected abstract String getSourceScriptPath() throws IOException;

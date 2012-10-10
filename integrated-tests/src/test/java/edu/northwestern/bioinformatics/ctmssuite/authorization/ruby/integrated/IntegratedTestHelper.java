@@ -20,6 +20,8 @@ import java.util.List;
 public class IntegratedTestHelper {
     private static final Logger log = LoggerFactory.getLogger(IntegratedTestHelper.class);
 
+    private static final long SERVICE_WAIT_TIMEOUT = 30 * 1000L;
+
     private static File projectRoot;
     private BundleContext bundleContext;
 
@@ -84,7 +86,17 @@ public class IntegratedTestHelper {
 
     @SuppressWarnings({ "unchecked" })
     public <T> T getService(Class<T> anInterface) {
-        ServiceReference ref = bundleContext.getServiceReference(anInterface.getName());
+
+        ServiceReference ref = null;
+        long start = System.currentTimeMillis();
+        while (ref == null && System.currentTimeMillis() - start < SERVICE_WAIT_TIMEOUT) {
+            ref = bundleContext.getServiceReference(anInterface.getName());
+            try { Thread.sleep(500); } catch (InterruptedException ie) { /* DC */ }
+        }
+        if (ref == null) {
+            throw new IllegalStateException(
+                "After " + SERVICE_WAIT_TIMEOUT + "ms, no service registered for " + anInterface.getName());
+        }
         return (T) bundleContext.getService(ref);
     }
 }

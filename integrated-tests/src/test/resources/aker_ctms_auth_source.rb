@@ -1,8 +1,13 @@
+start = Time.now
+$stdout.puts "%6.2f | Loading #{__FILE__}" % (Time.now - start)
+
 require 'rubygems'
+$stdout.puts "%6.2f | Loaded rubygems." % (Time.now - start)
 
 gemjar = Dir[File.expand_path('../../../../../integrated-test-gems/target/*.jar', __FILE__)].first
 fail "gemjar not found" unless gemjar
 require gemjar
+$stdout.puts "%6.2f | Loaded gemjar #{gemjar.inspect}" % (Time.now - start)
 
 require 'aker'
 require File.expand_path('../aker_patches.rb', __FILE__)
@@ -51,9 +56,11 @@ class AkerCtmsAuthSource
     }
   end
 end
+$stdout.puts "%6.2f | Defined #{AkerCtmsAuthSource}" % (Time.now - start)
 
 $suite_authorization_source = AkerCtmsAuthSource.new(
   Aker::Configuration.new do
     authority Aker::Authorities::Static.from_file(File.expand_path('../users.yml', __FILE__))
   end
 )
+$stdout.puts "%6.2f | Registered $suite_authorization_source" % (Time.now - start)
