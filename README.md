@@ -245,19 +245,37 @@ directory structure][psc-deploy-plugins].
 The way this library is structured, you will want to deploy the
 bundles (i.e., the JARs) before creating the configuration files.
 
+### Building the JARs
+
+- clone the repo locally
+- `cd` into the repo folder you just created
+- run `./install_gems.rb`
+  - if you get warnings about not having the proper version of Ruby installed, simply install it and try this step again
+- run `buildr package`
+  - `buildr` is a gem that actually does the work of building the JAR files in this case
+  - This step should output the three JAR files you'll need in the next section, at the following locations
+    - `~/.m2/repository/orb/jruby/jruby-complete/{version}/`jruby-complete-{version}.jar``
+    - `jruby-dynamic-import/target/ctms-auth-ruby-jruby-dynamic-import-{version}.jar`
+    - `source/target/ctms-auth-ruby-source-{version}.jar`
+
 ### Bundles
 
 You'll need to deploy the JARs produced and used by this project,
 dividing them up like so:
 
-* libraries
-  * jruby-complete
+* libraries (e.g. `$CATALINA_HOME/webapps/psc/WEB-INF/lib/`)
+  * jruby-complete-{version}.jar
   * ctms-auth-ruby-jruby-dynamic-import-{version}.jar
-* plugins
+* plugins folder (e.g. `$CATALINA_HOME/webapps/psc/WEB-INF/osgi-layer/020_plugins/install/`)
   * ctms-auth-ruby-source-{version}.jar
 
 Note that any gemjars that your authorization source depends on should
 not be deployed in either of these directories. See the next section.
+
+When this is done, go into PSC, select "Administration", and "Manage plugins" Among the plugins listed should be
+
+* JRuby 1.6.6
+* CTMS Commons Suite Authorization
 
 ### Configuration
 
