@@ -3,7 +3,7 @@ require 'buildr-gemjar'
 
 desc "A bridge for building CTMS Suite authorization sources in JRuby."
 define "ctms-auth-ruby" do
-  project.version = '0.0.0.RELEASE'
+  project.version = '0.0.1.DEV'
   project.group = 'edu.northwestern.bioinformatics'
 
   desc 'The OSGi bundle that provides the SuiteAuthorizationSource'
