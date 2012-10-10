@@ -1,5 +1,6 @@
 gems:
 - buildr =1.4.6
 - buildr-gemjar =1.1.0
+- github_api =0.7.0
 jruby: 1.6.5
 ant: 1.7.0
