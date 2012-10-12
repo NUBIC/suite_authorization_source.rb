@@ -251,10 +251,13 @@ You'll need to deploy the JARs produced and used by this project,
 dividing them up like so:
 
 * libraries
-  * jruby-complete
-  * ctms-auth-ruby-jruby-dynamic-import-{version}.jar
+  * jruby-complete (get it from [maven central][jruby-maven])
+  * ctms-auth-ruby-jruby-dynamic-import-{version}.jar (get a binary from the [downloads page][dl])
 * plugins
-  * ctms-auth-ruby-source-{version}.jar
+  * ctms-auth-ruby-source-{version}.jar (get  a binarys from the [downloads page][dl])
+
+[jruby-maven]: http://repo1.maven.org/maven2/org/jruby/jruby-complete/1.6.6/
+[dl]: https://github.com/NUBIC/suite_authorization_source.rb/downloads
 
 Note that any gemjars that your authorization source depends on should
 not be deployed in either of these directories. See the next section.
