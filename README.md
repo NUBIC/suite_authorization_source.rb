@@ -252,9 +252,9 @@ dividing them up like so:
 
 * libraries
   * jruby-complete (get it from [maven central][jruby-maven])
-  * ctms-auth-ruby-jruby-dynamic-import-{version}.jar (get a binary from the [downloads page][dl])
+  * ctms-auth-ruby-jruby-dynamic-import-{version}.jar (get it from the [downloads page][dl])
 * plugins
-  * ctms-auth-ruby-source-{version}.jar (get  a binarys from the [downloads page][dl])
+  * ctms-auth-ruby-source-{version}.jar (get it from the [downloads page][dl])
 
 [jruby-maven]: http://repo1.maven.org/maven2/org/jruby/jruby-complete/1.6.6/
 [dl]: https://github.com/NUBIC/suite_authorization_source.rb/downloads
