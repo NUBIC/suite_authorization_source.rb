@@ -259,7 +259,7 @@ dividing them up like so:
 [jruby-maven]: http://repo1.maven.org/maven2/org/jruby/jruby-complete/1.6.6/
 [dl]: https://github.com/NUBIC/suite_authorization_source.rb/downloads
 
-Note that any gemjars that your authorization source depends on should
+Note that any gemjar that your authorization source depends on should
 not be deployed in either of these directories. See the next section.
 
 ### Configuration
